@@ -53,7 +53,7 @@ const getAllLights = async (req, res) => {
 };
 
 const setState = async (req, res) => {
-  const { id: lightId, on: state, rgb } = req.body;
+  const { id: lightId, on: state, rgb, bri } = req.body;
   v3.discovery
     .nupnpSearch()
     .then((searchResults) => {
@@ -62,6 +62,7 @@ const setState = async (req, res) => {
     })
     .then((api) => {
       if (rgb) api.lights.setLightState(lightId, { rgb });
+      else if (bri) api.lights.setLightState(lightId, { bri });
       else api.lights.setLightState(lightId, { on: state });
     })
     .then(() => res.send(true))
