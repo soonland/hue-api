@@ -35,10 +35,12 @@
   },
   "dependencies": {
     "@peter-murray/hue-bridge-model": "file:../hue-bridge-model",
+    "axios": "^0.24.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "node-hue-api": "^5.0.0-beta.8",
-    "pg": "^8.7.1"
+    "https": "^1.0.0",
+    "pg": "^8.7.1",
+    "url": "^0.11.0"
   }
 }
