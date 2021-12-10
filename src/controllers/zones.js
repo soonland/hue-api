@@ -3,7 +3,7 @@ const util = require('util');
 const https = require('https');
 const getBridges = require('../utils/discover');
 
-const getAllLights = async (req, res) => {
+const getAllZones = async (req, res) => {
   getBridges()
     .then(({ data }) => data[0].internalipaddress)
     .then(async (ipAddress) => {
@@ -25,8 +25,8 @@ const getAllLights = async (req, res) => {
       // -----END CERTIFICATE-----`,
       //       });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
-      const lights = await axios.get(`https://${ipAddress}/clip/v2/resource/light`, { httpsAgent, headers });
-      res.send(lights.data);
+      const zones = await axios.get(`https://${ipAddress}/clip/v2/resource/zone`, { httpsAgent, headers });
+      res.send(zones.data);
     })
     .catch((err) => {
       console.error(err);
@@ -34,7 +34,7 @@ const getAllLights = async (req, res) => {
 };
 
 const setState = async (req, res) => {
-  const { id: lightId, on: state, rgb, bri } = req.body;
+  const { id: zoneId, on: state } = req.body;
   getBridges()
     .then(({ data }) => data[0].internalipaddress)
     .then(async (ipAddress) => {
@@ -42,16 +42,15 @@ const setState = async (req, res) => {
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
       let data = {};
       data = state !== undefined ? { ...data, on: { on: state } } : { ...data };
-      data = bri ? { ...data, dimming: { brightness: bri } } : { ...data };
-      const lights = await axios.put(`https://${ipAddress}/clip/v2/resource/light/${lightId}`, data, { httpsAgent, headers });
-      res.send(lights.data);
-      // if (rgb) api.lights.setLightState(lightId, { rgb });
-      // else if (bri) api.lights.setLightState(lightId, { bri });
-      // else api.lights.setLightState(lightId, { on: state });
+      const zones = await axios.put(`https://${ipAddress}/clip/v2/resource/zone/${zoneId}`, data, { httpsAgent, headers });
+      res.send(zones.data);
+      // if (rgb) api.zones.setZoneState(zoneId, { rgb });
+      // else if (bri) api.zones.setZoneState(zoneId, { bri });
+      // else api.zones.setZoneState(zoneId, { on: state });
     })
     .catch((err) => {
       console.error(util.inspect(err, true, 10));
     });
 };
 
-module.exports = { getAllLights, setState };
+module.exports = { getAllZones, setState };
