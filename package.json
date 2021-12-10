@@ -37,6 +37,7 @@
     "@peter-murray/hue-bridge-model": "file:../hue-bridge-model",
     "axios": "^0.24.0",
     "body-parser": "^1.19.0",
+    "cie-rgb-color-converter": "^1.0.6",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "https": "^1.0.0",

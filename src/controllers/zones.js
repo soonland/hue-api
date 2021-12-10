@@ -1,7 +1,6 @@
 const axios = require('axios');
 const util = require('util');
 const https = require('https');
-const xyConvert = require('cie-rgb-color-converter');
 const getBridges = require('../utils/discover');
 
 const getAllLights = async (req, res) => {
@@ -26,22 +25,8 @@ const getAllLights = async (req, res) => {
       // -----END CERTIFICATE-----`,
       //       });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
-      await axios
-        .get(`https://${ipAddress}/clip/v2/resource/light`, { httpsAgent, headers })
-        .then(async (result) => {
-          const newData = result.data.data.map((el) => {
-            const {
-              color: {
-                xy: { x, y },
-              },
-              dimming: { brightness },
-            } = el;
-            return { ...el, rgb: xyConvert.xyBriToRgb(x, y, brightness) };
-          });
-          console.log(util.inspect({ data: { data: newData } }, true, 10, true));
-          return { data: { data: newData } };
-        })
-        .then((lights) => res.send(lights.data));
+      const lights = await axios.get(`https://${ipAddress}/clip/v2/resource/light`, { httpsAgent, headers });
+      res.send(lights.data);
     })
     .catch((err) => {
       console.error(err);
@@ -50,17 +35,13 @@ const getAllLights = async (req, res) => {
 
 const setState = async (req, res) => {
   const { id: lightId, on: state, rgb, bri } = req.body;
-
   getBridges()
     .then(({ data }) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
-      const xy = rgb ? xyConvert.rgbToXy(rgb[0], rgb[1], rgb[2], 'LCA003') : undefined;
-
       let data = {};
       data = state !== undefined ? { ...data, on: { on: state } } : { ...data };
-      data = rgb ? { ...data, color: { xy: { x: xy.x, y: xy.y } } } : { ...data };
       data = bri ? { ...data, dimming: { brightness: bri } } : { ...data };
       const lights = await axios.put(`https://${ipAddress}/clip/v2/resource/light/${lightId}`, data, { httpsAgent, headers });
       res.send(lights.data);
