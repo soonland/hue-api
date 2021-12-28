@@ -2,7 +2,7 @@ const axios = require('axios');
 const https = require('https');
 const getBridges = require('../utils/discover');
 
-const getAllDevices = async (req, res) => {
+const getAllAccessories = async (req, res) => {
   getBridges()
     .then(({ data }) => data[0].internalipaddress)
     .then(async (ipAddress) => {
@@ -31,4 +31,4 @@ const getAllDevices = async (req, res) => {
     });
 };
 
-module.exports = { getAllDevices };
+module.exports = { getAllAccessories };
