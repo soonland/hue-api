@@ -38,7 +38,6 @@ const getAllLights = async (req, res) => {
             } = el;
             return { ...el, rgb: xyConvert.xyBriToRgb(x, y, brightness) };
           });
-          console.log(util.inspect({ data: { data: newData } }, true, 10, true));
           return { data: { data: newData } };
         })
         .then((lights) => res.send(lights.data));
