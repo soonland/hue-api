@@ -2,11 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const routes = require('./routes');
-const db = require('./db/connection');
 const getBridges = require('./utils/discover');
 
 const app = express();
-app.locals.db = db;
 
 app.use(cors());
 
