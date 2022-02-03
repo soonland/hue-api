@@ -4,7 +4,7 @@ const https = require('https');
 const xyConvert = require('cie-rgb-color-converter');
 const getBridges = require('../utils/discover');
 
-const getAllLights = async (req, res) => {
+const getAllRooms = async (req, res) => {
   getBridges()
     .then(({ data }) => data[0].internalipaddress)
     .then(async (ipAddress) => {
@@ -26,21 +26,7 @@ const getAllLights = async (req, res) => {
       // -----END CERTIFICATE-----`,
       //       });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
-      await axios
-        .get(`https://${ipAddress}/clip/v2/resource/light`, { httpsAgent, headers })
-        .then(async (result) => {
-          const newData = result.data.data.map((el) => {
-            const {
-              color: {
-                xy: { x, y },
-              },
-              dimming: { brightness },
-            } = el;
-            return { ...el, rgb: xyConvert.xyBriToRgb(x, y, brightness) };
-          });
-          return { data: { data: newData } };
-        })
-        .then((lights) => res.send(lights.data));
+      await axios.get(`https://${ipAddress}/clip/v2/resource/room`, { httpsAgent, headers }).then((rooms) => res.send(rooms.data));
     })
     .catch((err) => {
       console.error(err);
@@ -72,4 +58,4 @@ const setState = async (req, res) => {
     });
 };
 
-module.exports = { getAllLights, setState };
+module.exports = { getAllRooms, setState };
