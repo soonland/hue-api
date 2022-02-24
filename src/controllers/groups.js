@@ -39,7 +39,7 @@ const _getRGBFromXYState = (x, y, brightness) => {
 
 const getAllGroups = async (req, res) => {
   v3.discovery
-    .nupnpSearch()
+    .upnpSearch()
     .then((searchResults) => {
       const host = searchResults[0].ipaddress;
       return v3.api.createLocal(host).connect('-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva');
