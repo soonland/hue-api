@@ -38,6 +38,8 @@
     "cie-rgb-color-converter": "^1.0.6",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "https": "^1.0.0"
+    "express-winston": "^4.2.0",
+    "https": "^1.0.0",
+    "winston": "^3.6.0"
   }
 }
