@@ -1,10 +1,17 @@
 const axios = require('axios');
 const util = require('util');
 const https = require('https');
-const xyConvert = require('cie-rgb-color-converter');
 const getBridges = require('../utils/discover');
 
-const getAllRooms = async (req, res) => {
+const transformLight = (data) => {
+  const obj = {
+    id: data.id,
+    on: data.on,
+  };
+  return obj;
+};
+
+const getAllGroupedLight = async (req, res) => {
   getBridges()
     .then(({ data }) => data[0].internalipaddress)
     .then(async (ipAddress) => {
@@ -26,7 +33,16 @@ const getAllRooms = async (req, res) => {
       // -----END CERTIFICATE-----`,
       //       });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
-      await axios.get(`https://${ipAddress}/clip/v2/resource/room`, { httpsAgent, headers }).then((rooms) => res.send(rooms.data));
+      await axios
+        .get(`https://${ipAddress}/clip/v2/resource/grouped_light`, { httpsAgent, headers })
+        .then(async (result) => {
+          const newData = result.data.data.map((el) => {
+            const newLightObject = transformLight({ ...el });
+            return newLightObject;
+          });
+          return { data: newData, errors: result.data.errors };
+        })
+        .then((lights) => res.send(lights));
     })
     .catch((err) => {
       console.error(err);
@@ -34,19 +50,16 @@ const getAllRooms = async (req, res) => {
 };
 
 const setState = async (req, res) => {
-  const { id: lightId, on: state, rgb, bri } = req.body;
+  const { id: lightId, on: state } = req.body;
 
   getBridges()
     .then(({ data }) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
-      const xy = rgb ? xyConvert.rgbToXy(rgb[0], rgb[1], rgb[2], 'LCA003') : undefined;
 
       let data = {};
       data = state !== undefined ? { ...data, on: { on: state } } : { ...data };
-      data = rgb ? { ...data, color: { xy: { x: xy.x, y: xy.y } } } : { ...data };
-      data = bri ? { ...data, dimming: { brightness: bri } } : { ...data };
       const lights = await axios.put(`https://${ipAddress}/clip/v2/resource/grouped_light/${lightId}`, data, { httpsAgent, headers });
       res.send(lights.data);
       // if (rgb) api.lights.setLightState(lightId, { rgb });
@@ -58,4 +71,4 @@ const setState = async (req, res) => {
     });
 };
 
-module.exports = { getAllRooms, setState };
+module.exports = { getAllGroupedLight, setState };
