@@ -4,6 +4,24 @@ const https = require('https');
 const xyConvert = require('cie-rgb-color-converter');
 const getBridges = require('../utils/discover');
 
+const transformLight = (data) => {
+  const {
+    color: {
+      xy: { x, y },
+    },
+    dimming: { brightness },
+  } = data;
+  const obj = {
+    id: data.id,
+    name: data.metadata.name,
+    on: data.on,
+    brightness,
+    rgb: xyConvert.xyBriToRgb(x, y, brightness),
+    device: data.owner.rid,
+  };
+  return obj;
+};
+
 const getAllLights = async (req, res) => {
   getBridges()
     .then(({ data }) => data[0].internalipaddress)
@@ -30,17 +48,12 @@ const getAllLights = async (req, res) => {
         .get(`https://${ipAddress}/clip/v2/resource/light`, { httpsAgent, headers })
         .then(async (result) => {
           const newData = result.data.data.map((el) => {
-            const {
-              color: {
-                xy: { x, y },
-              },
-              dimming: { brightness },
-            } = el;
-            return { ...el, rgb: xyConvert.xyBriToRgb(x, y, brightness) };
+            const newLightObject = transformLight({ ...el });
+            return newLightObject;
           });
-          return { data: { data: newData } };
+          return { data: newData, errors: result.data.errors };
         })
-        .then((lights) => res.send(lights.data));
+        .then((lights) => res.send(lights));
     })
     .catch((err) => {
       console.error(err);
