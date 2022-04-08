@@ -4,25 +4,7 @@ const https = require('https');
 const xyConvert = require('cie-rgb-color-converter');
 const getBridges = require('../utils/discover');
 
-const transformLight = (data) => {
-  const {
-    color: {
-      xy: { x, y },
-    },
-    dimming: { brightness },
-  } = data;
-  const obj = {
-    id: data.id,
-    name: data.metadata.name,
-    on: data.on,
-    brightness,
-    rgb: xyConvert.xyBriToRgb(x, y, brightness),
-    device: data.owner.rid,
-  };
-  return obj;
-};
-
-const getAllLights = async (req, res) => {
+const getAllDevices = async (req, res) => {
   getBridges()
     .then(({ data }) => data[0].internalipaddress)
     .then(async (ipAddress) => {
@@ -44,16 +26,7 @@ const getAllLights = async (req, res) => {
       // -----END CERTIFICATE-----`,
       //       });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
-      await axios
-        .get(`https://${ipAddress}/clip/v2/resource/light`, { httpsAgent, headers })
-        .then(async (result) => {
-          const newData = result.data.data.map((el) => {
-            const newLightObject = transformLight({ ...el });
-            return newLightObject;
-          });
-          return { data: newData, errors: result.data.errors };
-        })
-        .then((lights) => res.send(lights));
+      await axios.get(`https://${ipAddress}/clip/v2/resource/device`, { httpsAgent, headers }).then((devices) => res.send(devices.data));
     })
     .catch((err) => {
       console.error(err);
@@ -74,15 +47,15 @@ const setState = async (req, res) => {
       data = state !== undefined ? { ...data, on: { on: state } } : { ...data };
       data = rgb ? { ...data, color: { xy: { x: xy.x, y: xy.y } } } : { ...data };
       data = bri ? { ...data, dimming: { brightness: bri } } : { ...data };
-      const lights = await axios.put(`https://${ipAddress}/clip/v2/resource/light/${lightId}`, data, { httpsAgent, headers });
-      res.send(lights.data);
-      // if (rgb) api.lights.setLightState(lightId, { rgb });
-      // else if (bri) api.lights.setLightState(lightId, { bri });
-      // else api.lights.setLightState(lightId, { on: state });
+      const devices = await axios.put(`https://${ipAddress}/clip/v2/resource/devices/${lightId}`, data, { httpsAgent, headers });
+      res.send(devices.data);
+      // if (rgb) api.devices.setDevicestate(lightId, { rgb });
+      // else if (bri) api.devices.setDevicestate(lightId, { bri });
+      // else api.devices.setDevicestate(lightId, { on: state });
     })
     .catch((err) => {
       console.error(util.inspect(err, true, 10));
     });
 };
 
-module.exports = { getAllLights, setState };
+module.exports = { getAllDevices, setState };
