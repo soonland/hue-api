@@ -58,4 +58,21 @@ const setState = async (req, res) => {
     });
 };
 
-module.exports = { getAllRooms, setState };
+const updateRoom = async (req, res) => {
+  const { id, children } = req.body;
+
+  getBridges()
+    .then(({ data }) => data[0].internalipaddress)
+    .then(async (ipAddress) => {
+      const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+      const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
+
+      const rooms = await axios.put(`https://${ipAddress}/clip/v2/resource/room/${id}`, { children }, { httpsAgent, headers });
+      res.send(rooms.data);
+    })
+    .catch((err) => {
+      console.error(util.inspect(err, true, 10));
+    });
+};
+
+module.exports = { getAllRooms, setState, updateRoom };
