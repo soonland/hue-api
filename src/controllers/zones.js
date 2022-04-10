@@ -53,4 +53,37 @@ const setState = async (req, res) => {
     });
 };
 
-module.exports = { getAllZones, setState };
+const addNewZone = async (req, res) => {
+  getBridges()
+    .then(({ data }) => data[0].internalipaddress)
+    .then(async (ipAddress) => {
+      const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+      const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
+      const data = { ...req.body };
+      const zones = await axios.post(`https://${ipAddress}/clip/v2/resource/zone`, data, { httpsAgent, headers });
+      res.send(zones.data);
+    })
+    .catch((err) => {
+      res.status(err.response.status).send(err.response.data);
+    });
+};
+
+const deleteZone = async (req, res) => {
+  getBridges()
+    .then(({ data }) => data[0].internalipaddress)
+    .then(async (ipAddress) => {
+      const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+      const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
+      const { zoneId } = req.params;
+      const zones = await axios.delete(`https://${ipAddress}/clip/v2/resource/zone/${zoneId}`, { httpsAgent, headers });
+      res.send(zones.data);
+      // if (rgb) api.zones.setZoneState(zoneId, { rgb });
+      // else if (bri) api.zones.setZoneState(zoneId, { bri });
+      // else api.zones.setZoneState(zoneId, { on: state });
+    })
+    .catch((err) => {
+      console.error(util.inspect(err, true, 10));
+    });
+};
+
+module.exports = { getAllZones, setState, addNewZone, deleteZone };
