@@ -2,6 +2,8 @@ const bonjour = require('bonjour')();
 const logger = require('./logger')(__filename);
 // const axios = require('axios');
 
+let bridges = null;
+
 // const getBridges = async () => ({ data: [{ internalipaddress: '192.168.1.65' }] });
 const getBridges = async () => {
   logger.info('Discovering network...');
@@ -31,4 +33,13 @@ const getBridges = async () => {
   });
 };
 
-module.exports = getBridges;
+const initBridges = (app) => ({ ...app, locals: { ...app.locals, bridges: getBridges() } });
+
+function getConfiguration() {
+  if (!bridges) {
+    bridges = getBridges();
+  }
+  return bridges;
+}
+
+module.exports = { getBridges, initBridges, getConfiguration };
