@@ -4,7 +4,7 @@ const getBridges = require('../utils/discover');
 
 const getAllAccessories = async (req, res) => {
   getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       //       const httpsAgent = new https.Agent({

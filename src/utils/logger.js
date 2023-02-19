@@ -6,4 +6,5 @@ const logger = createLogger({
   transports: [new transports.Console()],
 });
 
-module.exports = (parOrigin) => logger.child({ origin: parOrigin });
+module.exports = () => logger.child();
+// module.exports = (parOrigin) => logger.child({ origin: parOrigin });
