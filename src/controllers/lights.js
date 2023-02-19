@@ -2,7 +2,7 @@ const axios = require('axios');
 const util = require('util');
 const https = require('https');
 const xyConvert = require('cie-rgb-color-converter');
-const getBridges = require('../utils/discover');
+const { getConfiguration } = require('../utils/discover');
 
 const transformLight = (data) => {
   const {
@@ -23,8 +23,8 @@ const transformLight = (data) => {
 };
 
 const getAllLights = async (req, res) => {
-  getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+  getConfiguration()
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       //       const httpsAgent = new https.Agent({
@@ -47,11 +47,22 @@ const getAllLights = async (req, res) => {
       await axios
         .get(`https://${ipAddress}/clip/v2/resource/light`, { httpsAgent, headers })
         .then(async (result) => {
-          const newData = result.data.data.map((el) => {
-            const newLightObject = transformLight({ ...el });
-            return newLightObject;
-          });
-          return { data: newData, errors: result.data.errors };
+          let data;
+          if (req.query.groupBy === 'device') {
+            data = result.data.data.reduce((t, el) => {
+              const newLightObject = transformLight(el);
+              const a = t || [];
+              a[newLightObject.device] = a[newLightObject.device] || [];
+              a[newLightObject.device].push(newLightObject);
+              return a;
+            }, {});
+          } else {
+            data = result.data.data.map((el) => {
+              const newLightObject = transformLight(el);
+              return newLightObject;
+            });
+          }
+          return { data, errors: result.data.errors };
         })
         .then((lights) => res.send(lights));
     })
@@ -63,8 +74,8 @@ const getAllLights = async (req, res) => {
 const setState = async (req, res) => {
   const { id: lightId, on: state, rgb, bri } = req.body;
 
-  getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+  getConfiguration()
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };

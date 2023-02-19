@@ -1,10 +1,10 @@
 const axios = require('axios');
 const https = require('https');
-const getBridges = require('../utils/discover');
+const { getConfiguration } = require('../utils/discover');
 
 const getAllAccessories = async (req, res) => {
-  getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+  getConfiguration()
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       //       const httpsAgent = new https.Agent({

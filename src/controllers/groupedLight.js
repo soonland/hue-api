@@ -1,7 +1,7 @@
 const axios = require('axios');
 const util = require('util');
 const https = require('https');
-const getBridges = require('../utils/discover');
+const { getConfiguration } = require('../utils/discover');
 
 const transformLight = (data) => {
   const obj = {
@@ -12,8 +12,8 @@ const transformLight = (data) => {
 };
 
 const getAllGroupedLight = async (req, res) => {
-  getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+  getConfiguration()
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       //       const httpsAgent = new https.Agent({
@@ -52,8 +52,8 @@ const getAllGroupedLight = async (req, res) => {
 const setState = async (req, res) => {
   const { id: lightId, on: state } = req.body;
 
-  getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+  getConfiguration()
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };

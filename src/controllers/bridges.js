@@ -1,9 +1,11 @@
 const v3 = require('node-hue-api');
-const getBridges = require('../utils/discover');
+const { getBridges } = require('../utils/discover');
 
 const getAllBridges = async (req, res) => {
   getBridges()
-    .then(({ data }) => res.send(data))
+    .then((data) => {
+      res.send(data);
+    })
     .catch((err) => {
       console.error(err);
     });
