@@ -2,10 +2,10 @@ const axios = require('axios');
 const util = require('util');
 const https = require('https');
 const xyConvert = require('cie-rgb-color-converter');
-const getBridges = require('../utils/discover');
+const { getConfiguration } = require('../utils/discover');
 
 const getAllDevices = async (req, res) => {
-  getBridges()
+  getConfiguration()
     .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
@@ -36,7 +36,7 @@ const getAllDevices = async (req, res) => {
 const setState = async (req, res) => {
   const { id: lightId, on: state, rgb, bri } = req.body;
 
-  getBridges()
+  getConfiguration()
     .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
