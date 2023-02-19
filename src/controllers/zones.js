@@ -5,7 +5,7 @@ const getBridges = require('../utils/discover');
 
 const getAllZones = async (req, res) => {
   getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       //       const httpsAgent = new https.Agent({
@@ -36,7 +36,7 @@ const getAllZones = async (req, res) => {
 const setState = async (req, res) => {
   const { id: zoneId, on: state } = req.body;
   getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
@@ -55,7 +55,7 @@ const setState = async (req, res) => {
 
 const addNewZone = async (req, res) => {
   getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
@@ -70,7 +70,7 @@ const addNewZone = async (req, res) => {
 
 const deleteZone = async (req, res) => {
   getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };

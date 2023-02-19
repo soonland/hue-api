@@ -6,7 +6,7 @@ const getBridges = require('../utils/discover');
 
 const getAllRooms = async (req, res) => {
   getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       //       const httpsAgent = new https.Agent({
@@ -37,7 +37,7 @@ const setState = async (req, res) => {
   const { id: lightId, on: state, rgb, bri } = req.body;
 
   getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
@@ -62,7 +62,7 @@ const updateRoom = async (req, res) => {
   const { id, children } = req.body;
 
   getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
