@@ -12,7 +12,7 @@ const getAllBridges = async (req, res) => {
 };
 
 const getSearchNewLights = async (req, res) => {
-  const headers = '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva';
+  const headers = process.env.HUE_KEY;
 
   v3.discovery
     .nupnpSearch()
@@ -28,7 +28,7 @@ const getSearchNewLights = async (req, res) => {
 };
 
 const getNewLights = async (req, res) => {
-  const headers = '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva';
+  const headers = process.env.HUE_KEY;
 
   v3.discovery
     .nupnpSearch()

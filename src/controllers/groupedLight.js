@@ -32,7 +32,7 @@ const getAllGroupedLight = async (req, res) => {
       // sFgDAiEA1Fj/C3AN5psFMjo0//mrQebo0eKd3aWRx+pQY08mk48=
       // -----END CERTIFICATE-----`,
       //       });
-      const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
+      const headers = { 'hue-application-key': process.env.HUE_KEY };
       await axios
         .get(`https://${ipAddress}/clip/v2/resource/grouped_light`, { httpsAgent, headers })
         .then(async (result) => {
@@ -56,7 +56,7 @@ const setState = async (req, res) => {
     .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-      const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
+      const headers = { 'hue-application-key': process.env.HUE_KEY };
 
       let data = {};
       data = state !== undefined ? { ...data, on: { on: state } } : { ...data };

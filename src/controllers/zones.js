@@ -24,7 +24,7 @@ const getAllZones = async (req, res) => {
       // sFgDAiEA1Fj/C3AN5psFMjo0//mrQebo0eKd3aWRx+pQY08mk48=
       // -----END CERTIFICATE-----`,
       //       });
-      const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
+      const headers = { 'hue-application-key': process.env.HUE_KEY };
       const zones = await axios.get(`https://${ipAddress}/clip/v2/resource/zone`, { httpsAgent, headers });
       res.send(zones.data);
     })
@@ -39,7 +39,7 @@ const setState = async (req, res) => {
     .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-      const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
+      const headers = { 'hue-application-key': process.env.HUE_KEY };
       let data = {};
       data = state !== undefined ? { ...data, on: { on: state } } : { ...data };
       const zones = await axios.put(`https://${ipAddress}/clip/v2/resource/zone/${zoneId}`, data, { httpsAgent, headers });
@@ -58,7 +58,7 @@ const addNewZone = async (req, res) => {
     .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-      const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
+      const headers = { 'hue-application-key': process.env.HUE_KEY };
       const data = { ...req.body };
       const zones = await axios.post(`https://${ipAddress}/clip/v2/resource/zone`, data, { httpsAgent, headers });
       res.send(zones.data);
@@ -73,7 +73,7 @@ const deleteZone = async (req, res) => {
     .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-      const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
+      const headers = { 'hue-application-key': process.env.HUE_KEY };
       const { zoneId } = req.params;
       const zones = await axios.delete(`https://${ipAddress}/clip/v2/resource/zone/${zoneId}`, { httpsAgent, headers });
       res.send(zones.data);
