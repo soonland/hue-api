@@ -1,6 +1,7 @@
 const axios = require('axios');
 const util = require('util');
 const https = require('https');
+const xyConvert = require('cie-rgb-color-converter');
 const { getConfiguration } = require('../utils/discover');
 
 const transformLight = (data) => {
@@ -50,16 +51,19 @@ const getAllGroupedLight = async (req, res) => {
 };
 
 const setState = async (req, res) => {
-  const { id: lightId, on: state } = req.body;
+  const { id: lightId, on: state, rgb, bri } = req.body;
 
   getConfiguration()
     .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': process.env.HUE_KEY };
+      const xy = rgb ? xyConvert.rgbToXy(rgb[0], rgb[1], rgb[2], 'LCA003') : undefined;
 
       let data = {};
       data = state !== undefined ? { ...data, on: { on: state } } : { ...data };
+      data = rgb ? { ...data, color: { xy: { x: xy.x, y: xy.y } } } : { ...data };
+      data = bri ? { ...data, dimming: { brightness: bri } } : { ...data };
       const lights = await axios.put(`https://${ipAddress}/clip/v2/resource/grouped_light/${lightId}`, data, { httpsAgent, headers });
       res.send(lights.data);
       // if (rgb) api.lights.setLightState(lightId, { rgb });
