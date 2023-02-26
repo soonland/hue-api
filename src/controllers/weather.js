@@ -1,36 +1,34 @@
 const axios = require('axios');
 const https = require('https');
+const xyConvert = require('cie-rgb-color-converter');
 const { getConfiguration } = require('../utils/discover');
 
 const updateWeather = async (req, res) => {
   getConfiguration()
     .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
+      const coord = req.query.coordinates.split(';');
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-      //       const httpsAgent = new https.Agent({
-      //         cert: `-----BEGIN CERTIFICATE-----
-      // MIICMjCCAdigAwIBAgIUO7FSLbaxikuXAljzVaurLXWmFw4wCgYIKoZIzj0EAwIw
-      // OTELMAkGA1UEBhMCTkwxFDASBgNVBAoMC1BoaWxpcHMgSHVlMRQwEgYDVQQDDAty
-      // b290LWJyaWRnZTAiGA8yMDE3MDEwMTAwMDAwMFoYDzIwMzgwMTE5MDMxNDA3WjA5
-      // MQswCQYDVQQGEwJOTDEUMBIGA1UECgwLUGhpbGlwcyBIdWUxFDASBgNVBAMMC3Jv
-      // b3QtYnJpZGdlMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEjNw2tx2AplOf9x86
-      // aTdvEcL1FU65QDxziKvBpW9XXSIcibAeQiKxegpq8Exbr9v6LBnYbna2VcaK0G22
-      // jOKkTqOBuTCBtjAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBhjAdBgNV
-      // HQ4EFgQUZ2ONTFrDT6o8ItRnKfqWKnHFGmQwdAYDVR0jBG0wa4AUZ2ONTFrDT6o8
-      // ItRnKfqWKnHFGmShPaQ7MDkxCzAJBgNVBAYTAk5MMRQwEgYDVQQKDAtQaGlsaXBz
-      // IEh1ZTEUMBIGA1UEAwwLcm9vdC1icmlkZ2WCFDuxUi22sYpLlwJY81Wrqy11phcO
-      // MAoGCCqGSM49BAMCA0gAMEUCIEBYYEOsa07TH7E5MJnGw557lVkORgit2Rm1h3B2
-      // sFgDAiEA1Fj/C3AN5psFMjo0//mrQebo0eKd3aWRx+pQY08mk48=
-      // -----END CERTIFICATE-----`,
-      //       });
 
-      const weatherAPI = `https://api.open-meteo.com/v1/gem?latitude=48.45&longitude=-68.52&current_weather=true&timezone=America%2FNew_York`;
+      const weatherAPI = `https://api.open-meteo.com/v1/gem?latitude=${coord[0]}&longitude=${coord[1]}&current_weather=true&timezone=America%2FNew_York`;
+      // const weatherAPI = `https://api.open-meteo.com/v1/gem?latitude=48.45&longitude=-68.52&current_weather=true&timezone=America%2FNew_York`;
+      // const weatherAPI = `https://api.open-meteo.com/v1/gem?latitude=22.00&longitude=-79.50&current_weather=true&timezone=America%2FNew_York`;
       const weather = await axios.get(weatherAPI);
-      console.log(weather.data);
+      const r = ((weather.data.current_weather.temperature + 25) * 10) / 2;
+      const b = 255 - r;
 
+      const lightId = '4bf1349e-85cf-43a7-a539-a3c6ba0bde54';
+      const rgb = [r, 0, b];
+      console.log(rgb);
       const headers = { 'hue-application-key': process.env.HUE_KEY };
-      const zones = await axios.get(`https://${ipAddress}/clip/v2/resource/zone`, { httpsAgent, headers });
-      res.send(zones.data);
+      const xy = rgb ? xyConvert.rgbToXy(rgb[0], rgb[1], rgb[2], 'LCA003') : undefined;
+
+      let data = {};
+      data = { ...data, on: { on: true } };
+      data = { ...data, color: { xy: { x: xy.x, y: xy.y } } };
+      data = { ...data, dimming: { brightness: 100 } };
+      await axios.put(`https://${ipAddress}/clip/v2/resource/grouped_light/${lightId}`, data, { httpsAgent, headers });
+      res.send(weather.data.current_weather);
     })
     .catch((err) => {
       console.error(err);
