@@ -2,7 +2,7 @@ const express = require('express');
 const expressWinston = require('express-winston');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const { getConfiguration } = require('./utils/discover');
+const { startDiscovery } = require('./utils/discover');
 const routes = require('./routes');
 const httpLogger = require('./utils/httpLogger');
 const logger = require('./utils/logger')(__filename);
@@ -27,6 +27,6 @@ app.use('/', routes);
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  getConfiguration();
+  startDiscovery();
   logger.info(`Server is running on port ${PORT}.`);
 });
