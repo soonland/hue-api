@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const discovery = require('./discovery');
 const bridges = require('./bridges');
 const devices = require('./devices');
 const lights = require('./lights');
@@ -17,6 +18,7 @@ router.use('/api/rooms', rooms);
 router.use('/api/zones', zones);
 router.use('/api/accessories', accessories);
 router.use('/api/weather', updateWeather);
+router.use('/api/discovery', discovery);
 
 router.use('/api/apple', apple);
 
