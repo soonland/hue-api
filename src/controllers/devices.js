@@ -2,11 +2,11 @@ const axios = require('axios');
 const util = require('util');
 const https = require('https');
 const xyConvert = require('cie-rgb-color-converter');
-const getBridges = require('../utils/discover');
+const { getConfiguration } = require('../utils/discover');
 
 const getAllDevices = async (req, res) => {
-  getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+  getConfiguration()
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       //       const httpsAgent = new https.Agent({
@@ -25,7 +25,7 @@ const getAllDevices = async (req, res) => {
       // sFgDAiEA1Fj/C3AN5psFMjo0//mrQebo0eKd3aWRx+pQY08mk48=
       // -----END CERTIFICATE-----`,
       //       });
-      const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
+      const headers = { 'hue-application-key': process.env.HUE_KEY };
       await axios.get(`https://${ipAddress}/clip/v2/resource/device`, { httpsAgent, headers }).then((devices) => res.send(devices.data));
     })
     .catch((err) => {
@@ -36,11 +36,11 @@ const getAllDevices = async (req, res) => {
 const setState = async (req, res) => {
   const { id: lightId, on: state, rgb, bri } = req.body;
 
-  getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+  getConfiguration()
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-      const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
+      const headers = { 'hue-application-key': process.env.HUE_KEY };
       const xy = rgb ? xyConvert.rgbToXy(rgb[0], rgb[1], rgb[2], 'LCA003') : undefined;
 
       let data = {};

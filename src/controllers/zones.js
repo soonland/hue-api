@@ -1,11 +1,11 @@
 const axios = require('axios');
 const util = require('util');
 const https = require('https');
-const getBridges = require('../utils/discover');
+const { getConfiguration } = require('../utils/discover');
 
 const getAllZones = async (req, res) => {
-  getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+  getConfiguration()
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       //       const httpsAgent = new https.Agent({
@@ -24,7 +24,7 @@ const getAllZones = async (req, res) => {
       // sFgDAiEA1Fj/C3AN5psFMjo0//mrQebo0eKd3aWRx+pQY08mk48=
       // -----END CERTIFICATE-----`,
       //       });
-      const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
+      const headers = { 'hue-application-key': process.env.HUE_KEY };
       const zones = await axios.get(`https://${ipAddress}/clip/v2/resource/zone`, { httpsAgent, headers });
       res.send(zones.data);
     })
@@ -35,11 +35,11 @@ const getAllZones = async (req, res) => {
 
 const setState = async (req, res) => {
   const { id: zoneId, on: state } = req.body;
-  getBridges()
-    .then(({ data }) => data[0].internalipaddress)
+  getConfiguration()
+    .then((data) => data[0].internalipaddress)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-      const headers = { 'hue-application-key': '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva' };
+      const headers = { 'hue-application-key': process.env.HUE_KEY };
       let data = {};
       data = state !== undefined ? { ...data, on: { on: state } } : { ...data };
       const zones = await axios.put(`https://${ipAddress}/clip/v2/resource/zone/${zoneId}`, data, { httpsAgent, headers });
@@ -53,4 +53,37 @@ const setState = async (req, res) => {
     });
 };
 
-module.exports = { getAllZones, setState };
+const addNewZone = async (req, res) => {
+  getConfiguration()
+    .then((data) => data[0].internalipaddress)
+    .then(async (ipAddress) => {
+      const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+      const headers = { 'hue-application-key': process.env.HUE_KEY };
+      const data = { ...req.body };
+      const zones = await axios.post(`https://${ipAddress}/clip/v2/resource/zone`, data, { httpsAgent, headers });
+      res.send(zones.data);
+    })
+    .catch((err) => {
+      res.status(err.response.status).send(err.response.data);
+    });
+};
+
+const deleteZone = async (req, res) => {
+  getConfiguration()
+    .then((data) => data[0].internalipaddress)
+    .then(async (ipAddress) => {
+      const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+      const headers = { 'hue-application-key': process.env.HUE_KEY };
+      const { zoneId } = req.params;
+      const zones = await axios.delete(`https://${ipAddress}/clip/v2/resource/zone/${zoneId}`, { httpsAgent, headers });
+      res.send(zones.data);
+      // if (rgb) api.zones.setZoneState(zoneId, { rgb });
+      // else if (bri) api.zones.setZoneState(zoneId, { bri });
+      // else api.zones.setZoneState(zoneId, { on: state });
+    })
+    .catch((err) => {
+      console.error(util.inspect(err, true, 10));
+    });
+};
+
+module.exports = { getAllZones, setState, addNewZone, deleteZone };

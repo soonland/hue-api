@@ -1,16 +1,18 @@
 const v3 = require('node-hue-api');
-const getBridges = require('../utils/discover');
+const { getBridges } = require('../utils/discover');
 
 const getAllBridges = async (req, res) => {
   getBridges()
-    .then(({ data }) => res.send(data))
+    .then((data) => {
+      res.send(data);
+    })
     .catch((err) => {
       console.error(err);
     });
 };
 
 const getSearchNewLights = async (req, res) => {
-  const headers = '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva';
+  const headers = process.env.HUE_KEY;
 
   v3.discovery
     .nupnpSearch()
@@ -26,7 +28,7 @@ const getSearchNewLights = async (req, res) => {
 };
 
 const getNewLights = async (req, res) => {
-  const headers = '-6QQKPLW2a6LLQolgJRoVCO3wwx3C3BlhjzhEHva';
+  const headers = process.env.HUE_KEY;
 
   v3.discovery
     .nupnpSearch()

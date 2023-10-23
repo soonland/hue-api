@@ -6,6 +6,7 @@ const groupedLight = require('./groupedLight');
 const rooms = require('./rooms');
 const zones = require('./zones');
 const accessories = require('./accessories');
+const updateWeather = require('./weather');
 
 router.use('/api/bridges', bridges);
 router.use('/api/devices', devices);
@@ -14,5 +15,6 @@ router.use('/api/groupedLight', groupedLight);
 router.use('/api/rooms', rooms);
 router.use('/api/zones', zones);
 router.use('/api/accessories', accessories);
+router.use('/api/weather', updateWeather);
 
 module.exports = router;
