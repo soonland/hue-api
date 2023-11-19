@@ -2,11 +2,11 @@ const axios = require('axios');
 const util = require('util');
 const https = require('https');
 const xyConvert = require('cie-rgb-color-converter');
-const { getConfiguration } = require('../utils/discover');
+const { getServices } = require('../utils/discover');
 
 const getAllDevices = async (req, res) => {
-  getConfiguration()
-    .then((data) => data[0].internalipaddress)
+  getServices(req)
+    .then((data) => data[0].address)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       //       const httpsAgent = new https.Agent({
@@ -36,8 +36,8 @@ const getAllDevices = async (req, res) => {
 const setState = async (req, res) => {
   const { id: lightId, on: state, rgb, bri } = req.body;
 
-  getConfiguration()
-    .then((data) => data[0].internalipaddress)
+  getServices(req)
+    .then((data) => data[0].address)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': process.env.HUE_KEY };

@@ -1,11 +1,11 @@
 const axios = require('axios');
 const util = require('util');
 const https = require('https');
-const { getConfiguration } = require('../utils/discover');
+const { getServices } = require('../utils/discover');
 
 const getAllZones = async (req, res) => {
-  getConfiguration()
-    .then((data) => data[0].internalipaddress)
+  getServices(req)
+    .then((data) => data[0].address)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       //       const httpsAgent = new https.Agent({
@@ -54,8 +54,8 @@ const setState = async (req, res) => {
 };
 
 const addNewZone = async (req, res) => {
-  getConfiguration()
-    .then((data) => data[0].internalipaddress)
+  getServices(req)
+    .then((data) => data[0].address)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': process.env.HUE_KEY };
@@ -69,8 +69,8 @@ const addNewZone = async (req, res) => {
 };
 
 const deleteZone = async (req, res) => {
-  getConfiguration()
-    .then((data) => data[0].internalipaddress)
+  getServices(req)
+    .then((data) => data[0].address)
     .then(async (ipAddress) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': process.env.HUE_KEY };

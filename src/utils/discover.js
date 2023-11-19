@@ -27,6 +27,7 @@ const startDiscovery = async () => {
 const getServices = async (req) => {
   let aServicesList = browser.services;
   if (req.query.type) aServicesList = browser.services.filter((el) => el.type === req.query.type);
+  console.log(aServicesList);
   return new Promise((resolve) => {
     resolve(aServicesList.map((el) => ({ type: el.type, name: el.name, address: el.addresses[0] })));
   });
