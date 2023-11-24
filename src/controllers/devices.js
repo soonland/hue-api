@@ -3,6 +3,7 @@ const util = require('util');
 const https = require('https');
 const xyConvert = require('cie-rgb-color-converter');
 const { getServices } = require('../utils/discover');
+const { postUrl, putUrl, getUrl, deleteUrl } = require('../utils/http');
 
 const getAllDevices = async (req, res) => {
   getServices(req)
@@ -26,7 +27,7 @@ const getAllDevices = async (req, res) => {
       // -----END CERTIFICATE-----`,
       //       });
       const headers = { 'hue-application-key': process.env.HUE_KEY };
-      await axios.get(`https://${ipAddress}/clip/v2/resource/device`, { httpsAgent, headers }).then((devices) => res.send(devices.data));
+      await getUrl(`https://${ipAddress}/clip/v2/resource/device`, { httpsAgent, headers }).then((devices) => res.send(devices.data));
     })
     .catch((err) => {
       console.error(err);
@@ -47,7 +48,7 @@ const setState = async (req, res) => {
       data = state !== undefined ? { ...data, on: { on: state } } : { ...data };
       data = rgb ? { ...data, color: { xy: { x: xy.x, y: xy.y } } } : { ...data };
       data = bri ? { ...data, dimming: { brightness: bri } } : { ...data };
-      const devices = await axios.put(`https://${ipAddress}/clip/v2/resource/devices/${lightId}`, data, { httpsAgent, headers });
+      const devices = await putUrl(`https://${ipAddress}/clip/v2/resource/devices/${lightId}`, data, { httpsAgent, headers });
       res.send(devices.data);
       // if (rgb) api.devices.setDevicestate(lightId, { rgb });
       // else if (bri) api.devices.setDevicestate(lightId, { bri });

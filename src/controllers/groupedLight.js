@@ -3,6 +3,7 @@ const util = require('util');
 const https = require('https');
 const xyConvert = require('cie-rgb-color-converter');
 const { getServices } = require('../utils/discover');
+const { postUrl, putUrl, getUrl, deleteUrl } = require('../utils/http');
 
 const transformLight = (data) => {
   const obj = {
@@ -65,7 +66,7 @@ const setState = async (req, res) => {
       data = state !== undefined ? { ...data, on: { on: state } } : { ...data };
       data = rgb ? { ...data, color: { xy: { x: xy.x, y: xy.y } } } : { ...data };
       data = bri ? { ...data, dimming: { brightness: bri } } : { ...data };
-      const lights = await axios.put(`https://${ipAddress}/clip/v2/resource/grouped_light/${lightId}`, data, { httpsAgent, headers });
+      const lights = await putUrl(`https://${ipAddress}/clip/v2/resource/grouped_light/${lightId}`, data, { httpsAgent, headers });
       res.send(lights.data);
       // if (rgb) api.lights.setLightState(lightId, { rgb });
       // else if (bri) api.lights.setLightState(lightId, { bri });
