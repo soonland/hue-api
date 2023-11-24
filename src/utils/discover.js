@@ -1,39 +1,42 @@
-const bonjour = require('bonjour')();
+const { Bonjour } = require('bonjour-service');
 const logger = require('./logger')(__filename);
 // const axios = require('axios');
 
 let bridges = null;
+let browser;
 
-// const getBridges = async () => ({ data: [{ internalipaddress: '192.168.1.65' }] });
-const getBridges = async () => {
+const startDiscovery = async () => {
   logger.info('Discovering network...');
-  const browser = bonjour.find({ type: 'hue', protocol: 'tcp' }, (service) => {
-    logger.debug(`Found one service at ${service.addresses[0]}`);
+  if (browser) {
+    browser.update();
+    return;
+  }
+  // hue OR airplay OR googlecast OR hap
+  const bonjour = new Bonjour();
+  browser = bonjour.find();
+
+  browser.on('up', (service) => {
+    logger.debug(`Found one service at ${service.type}/${service.name}/${service.addresses[0]}`);
   });
 
-  return new Promise((resolve) => {
-    browser.start();
-
-    setTimeout(() => {
-      const allServices = browser.services;
-
-      const results = [];
-      if (allServices) {
-        resolve(
-          allServices.map((service) => ({
-            internalipaddress: service.addresses[0],
-            id: service.fqdn,
-          }))
-        );
-      }
-
-      browser.stop();
-      resolve(results);
-    }, 5000);
+  browser.on('down', (service) => {
+    logger.debug(`Bye bye to one service at ${service.type}/${service.name}/${service.addresses[0]}`);
   });
 };
 
-const initBridges = (app) => ({ ...app, locals: { ...app.locals, bridges: getBridges() } });
+const getServices = async (req) => {
+  let aServicesList = browser.services;
+  if (req.query.type) aServicesList = browser.services.filter((el) => el.type === req.query.type);
+  console.log(aServicesList);
+  return new Promise((resolve) => {
+    resolve(aServicesList.map((el) => ({ type: el.type, name: el.name, address: el.addresses[0] })));
+  });
+};
+
+const getBridges = async () =>
+  new Promise((resolve) => {
+    resolve(browser.services);
+  });
 
 function getConfiguration() {
   if (!bridges) {
@@ -42,4 +45,4 @@ function getConfiguration() {
   return bridges;
 }
 
-module.exports = { getBridges, initBridges, getConfiguration };
+module.exports = { startDiscovery, getBridges, getServices, getConfiguration };
