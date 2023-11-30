@@ -2,6 +2,7 @@ const axios = require('axios');
 const util = require('util');
 const https = require('https');
 const { getServices } = require('../utils/discover');
+const { postUrl, putUrl, getUrl, deleteUrl } = require('../utils/http');
 
 const getAllZones = async (req, res) => {
   getServices(req)
@@ -25,7 +26,7 @@ const getAllZones = async (req, res) => {
       // -----END CERTIFICATE-----`,
       //       });
       const headers = { 'hue-application-key': process.env.HUE_KEY };
-      const zones = await axios.get(`https://${ipAddress}/clip/v2/resource/zone`, { httpsAgent, headers });
+      const zones = await getUrl(`https://${ipAddress}/clip/v2/resource/zone`, { httpsAgent, headers });
       res.send(zones.data);
     })
     .catch((err) => {
@@ -42,7 +43,7 @@ const setState = async (req, res) => {
       const headers = { 'hue-application-key': process.env.HUE_KEY };
       let data = {};
       data = state !== undefined ? { ...data, on: { on: state } } : { ...data };
-      const zones = await axios.put(`https://${ipAddress}/clip/v2/resource/zone/${zoneId}`, data, { httpsAgent, headers });
+      const zones = await putUrl(`https://${ipAddress}/clip/v2/resource/zone/${zoneId}`, data, { httpsAgent, headers });
       res.send(zones.data);
       // if (rgb) api.zones.setZoneState(zoneId, { rgb });
       // else if (bri) api.zones.setZoneState(zoneId, { bri });
@@ -60,7 +61,7 @@ const addNewZone = async (req, res) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': process.env.HUE_KEY };
       const data = { ...req.body };
-      const zones = await axios.post(`https://${ipAddress}/clip/v2/resource/zone`, data, { httpsAgent, headers });
+      const zones = await postUrl(`https://${ipAddress}/clip/v2/resource/zone`, data, { httpsAgent, headers });
       res.send(zones.data);
     })
     .catch((err) => {
@@ -75,7 +76,7 @@ const deleteZone = async (req, res) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': process.env.HUE_KEY };
       const { zoneId } = req.params;
-      const zones = await axios.delete(`https://${ipAddress}/clip/v2/resource/zone/${zoneId}`, { httpsAgent, headers });
+      const zones = await deleteUrl(`https://${ipAddress}/clip/v2/resource/zone/${zoneId}`, { httpsAgent, headers });
       res.send(zones.data);
       // if (rgb) api.zones.setZoneState(zoneId, { rgb });
       // else if (bri) api.zones.setZoneState(zoneId, { bri });

@@ -3,6 +3,7 @@ const util = require('util');
 const https = require('https');
 const xyConvert = require('cie-rgb-color-converter');
 const { getServices } = require('../utils/discover');
+const { postUrl, putUrl, getUrl, deleteUrl } = require('../utils/http');
 
 const getAllRooms = async (req, res) => {
   getServices(req)
@@ -26,7 +27,7 @@ const getAllRooms = async (req, res) => {
       // -----END CERTIFICATE-----`,
       //       });
       const headers = { 'hue-application-key': process.env.HUE_KEY };
-      await axios.get(`https://${ipAddress}/clip/v2/resource/room`, { httpsAgent, headers }).then((rooms) => res.send(rooms.data));
+      await getUrl(`https://${ipAddress}/clip/v2/resource/room`, { httpsAgent, headers }).then((rooms) => res.send(rooms.data));
     })
     .catch((err) => {
       console.error(err);
@@ -47,7 +48,7 @@ const setState = async (req, res) => {
       data = state !== undefined ? { ...data, on: { on: state } } : { ...data };
       data = rgb ? { ...data, color: { xy: { x: xy.x, y: xy.y } } } : { ...data };
       data = bri ? { ...data, dimming: { brightness: bri } } : { ...data };
-      const lights = await axios.put(`https://${ipAddress}/clip/v2/resource/grouped_light/${lightId}`, data, { httpsAgent, headers });
+      const lights = await putUrl(`https://${ipAddress}/clip/v2/resource/grouped_light/${lightId}`, data, { httpsAgent, headers });
       res.send(lights.data);
       // if (rgb) api.lights.setLightState(lightId, { rgb });
       // else if (bri) api.lights.setLightState(lightId, { bri });
@@ -67,7 +68,7 @@ const updateRoom = async (req, res) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': process.env.HUE_KEY };
 
-      const rooms = await axios.put(`https://${ipAddress}/clip/v2/resource/room/${id}`, { children }, { httpsAgent, headers });
+      const rooms = await putUrl(`https://${ipAddress}/clip/v2/resource/room/${id}`, { children }, { httpsAgent, headers });
       res.send(rooms.data);
     })
     .catch((err) => {

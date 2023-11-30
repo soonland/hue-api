@@ -2,6 +2,7 @@ const axios = require('axios');
 const https = require('https');
 const xyConvert = require('cie-rgb-color-converter');
 const { getConfiguration } = require('../utils/discover');
+const { postUrl, putUrl, getUrl, deleteUrl } = require('../utils/http');
 
 const updateWeather = async (req, res) => {
   getConfiguration()
@@ -13,7 +14,7 @@ const updateWeather = async (req, res) => {
       const weatherAPI = `https://api.open-meteo.com/v1/gem?latitude=${coord[0]}&longitude=${coord[1]}&current_weather=true&timezone=America%2FNew_York`;
       // const weatherAPI = `https://api.open-meteo.com/v1/gem?latitude=48.45&longitude=-68.52&current_weather=true&timezone=America%2FNew_York`;
       // const weatherAPI = `https://api.open-meteo.com/v1/gem?latitude=22.00&longitude=-79.50&current_weather=true&timezone=America%2FNew_York`;
-      const weather = await axios.get(weatherAPI);
+      const weather = await getUrl(weatherAPI);
       const r = ((weather.data.current_weather.temperature + 25) * 10) / 2;
       const b = 255 - r;
 
@@ -27,7 +28,7 @@ const updateWeather = async (req, res) => {
       data = { ...data, on: { on: true } };
       data = { ...data, color: { xy: { x: xy.x, y: xy.y } } };
       data = { ...data, dimming: { brightness: 100 } };
-      await axios.put(`https://${ipAddress}/clip/v2/resource/grouped_light/${lightId}`, data, { httpsAgent, headers });
+      await putUrl(`https://${ipAddress}/clip/v2/resource/grouped_light/${lightId}`, data, { httpsAgent, headers });
       res.send(weather.data.current_weather);
     })
     .catch((err) => {
