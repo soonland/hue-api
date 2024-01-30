@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { getAllAppleDevices } = require('../controllers/appleDevices');
+const { getAllAppleDevices } = require('../controllers/apple');
 
 router.get('/', getAllAppleDevices);
 

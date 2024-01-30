@@ -13,7 +13,7 @@ const startDiscovery = async () => {
   }
   // hue OR airplay OR googlecast OR hap
   const bonjour = new Bonjour();
-  browser = bonjour.find();
+  browser = bonjour.find({ type: 'hue'});
 
   browser.on('up', (service) => {
     logger.debug(`Found one service at ${service.type}/${service.name}/${service.addresses[0]}`);
@@ -24,10 +24,10 @@ const startDiscovery = async () => {
   });
 };
 
-const getServices = async (req) => {
+const getDiscoveredServices = async (type) => {
   let aServicesList = browser.services;
-  if (req.query.type) aServicesList = browser.services.filter((el) => el.type === req.query.type);
-  console.log(aServicesList);
+  console.log('type', type);
+  if (type) aServicesList = browser.services.filter((el) => el.type === type);
   return new Promise((resolve) => {
     resolve(aServicesList.map((el) => ({ type: el.type, name: el.name, address: el.addresses[0] })));
   });
@@ -45,4 +45,4 @@ function getConfiguration() {
   return bridges;
 }
 
-module.exports = { startDiscovery, getBridges, getServices, getConfiguration };
+module.exports = { startDiscovery, getBridges, getDiscoveredServices, getConfiguration };

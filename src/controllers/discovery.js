@@ -11,9 +11,9 @@ const start = async (req, res) => {
     });
 };
 
-const getServices = async (req, res) => {
+const getDiscoveredServices = async (req, res) => {
   discover
-    .getServices(req)
+    .getDiscoveredServices(req.query.type)
     .then(async (services) => {
       res.send(services);
     })
@@ -22,4 +22,4 @@ const getServices = async (req, res) => {
     });
 };
 
-module.exports = { start, getServices };
+module.exports = { start, getDiscoveredServices };
