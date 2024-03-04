@@ -38,7 +38,7 @@
     "bonjour-service": "^1.1.1",
     "cie-rgb-color-converter": "^1.0.6",
     "cors": "^2.8.5",
-    "express": "^4.17.1",
+    "express": "^4.18.3",
     "express-winston": "^4.2.0",
     "https": "^1.0.0",
     "node-hue-api": "^5.0.0-beta.16",
