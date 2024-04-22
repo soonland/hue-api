@@ -19,7 +19,7 @@
   "homepage": "https://github.com/soonland/hue-api#readme",
   "devDependencies": {
     "@babel/eslint-parser": "^7.24.1",
-    "eslint": "^8.57.0",
+    "eslint": "^9.1.0",
     "eslint-config-airbnb": "^19.0.2",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.23.4",
