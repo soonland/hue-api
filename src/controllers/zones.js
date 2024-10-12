@@ -76,6 +76,10 @@ const deleteZone = async (req, res) => {
       const httpsAgent = new https.Agent({ rejectUnauthorized: false });
       const headers = { 'hue-application-key': process.env.HUE_KEY };
       const { zoneId } = req.params;
+      const validZoneIdPattern = /^[a-zA-Z0-9_-]+$/;
+      if (!validZoneIdPattern.test(zoneId)) {
+        return res.status(400).send({ error: 'Invalid zoneId parameter' });
+      }
       const zones = await deleteUrl(`https://${ipAddress}/clip/v2/resource/zone/${zoneId}`, { httpsAgent, headers });
       res.send(zones.data);
       // if (rgb) api.zones.setZoneState(zoneId, { rgb });
