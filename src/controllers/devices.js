@@ -1,9 +1,8 @@
-const axios = require('axios');
 const util = require('util');
 const https = require('https');
 const xyConvert = require('cie-rgb-color-converter');
 const { getServices } = require('../utils/discover');
-const { postUrl, putUrl, getUrl, deleteUrl } = require('../utils/http');
+const { putUrl, getUrl } = require('../utils/http');
 
 const getAllDevices = async (req, res) => {
   getServices(req)
