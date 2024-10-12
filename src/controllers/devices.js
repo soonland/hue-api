@@ -47,7 +47,7 @@ const setState = async (req, res) => {
       data = state !== undefined ? { ...data, on: { on: state } } : { ...data };
       data = rgb ? { ...data, color: { xy: { x: xy.x, y: xy.y } } } : { ...data };
       data = bri ? { ...data, dimming: { brightness: bri } } : { ...data };
-      const devices = await putUrl(`https://${ipAddress}/clip/v2/resource/devices/${lightId}`, data, { httpsAgent, headers });
+      const devices = await putUrl(`https://${ipAddress}/clip/v2/resource/devices/${encodeURIComponent(lightId)}`, data, { httpsAgent, headers });
       res.send(devices.data);
       // if (rgb) api.devices.setDevicestate(lightId, { rgb });
       // else if (bri) api.devices.setDevicestate(lightId, { bri });

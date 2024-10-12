@@ -8,8 +8,12 @@ const postUrl = async (parUrl, parBody, parConfig) => {
 
 const putUrl = async (parUrl, parBody, parConfig) => {
   const aArray = ['192.168.1.64'];
+  const allowedPaths = ['/clip/v2/resource/devices/'];
   const { protocol, hostname, host, pathname, search } = new URL(parUrl);
-  if (aArray.includes(hostname)) return axios.put(`${protocol}${host}${pathname}${search}`, parBody, parConfig);
+  if (aArray.includes(hostname) && allowedPaths.some(path => pathname.startsWith(path))) {
+    return axios.put(`${protocol}${host}${pathname}${search}`, parBody, parConfig);
+  }
+  throw new Error('Invalid URL');
 };
 
 const getUrl = async (parUrl, parConfig) => {
