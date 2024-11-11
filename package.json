@@ -45,6 +45,6 @@
     "express-winston": "^4.2.0",
     "https": "^1.0.0",
     "node-hue-api": "^5.0.0-beta.16",
-    "winston": "^3.13.0"
+    "winston": "^3.17.0"
   }
 }
